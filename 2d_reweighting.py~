@@ -133,123 +133,123 @@ def main():
                 for k in nWindows_range:
                         w+= np.exp((-beta*r0_k_data[k][1]/2.)*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
                         #w+= (data[i][j][0]**2)*np.exp((-beta*r0_k_data[k][1]/2.)*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z; 
+
                 w /= parameters['nWindows'] # <r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z>; average reciprocal boltzmann weight of data point in all possible windows;
                 weight = 1./w
                 W.write('%15d %15f\n'%(j,weight))
                 x_total_fe_counts[x_index] += weight
                 y_total_fe_counts[y_index] += weight
                 td_total_fe_counts[x_index][y_index] += weight
-            
-            # ----------------------------------------
-            # FINISHING ANALYSIS OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - XDATA
-            x_window_prob_density = x_window_counts/(nValues*delta_x)
-            plt.figure(1)
-            plt.plot(x_half_bins[:],x_window_prob_density[:],zorder=3)
-            
-            # ----------------------------------------
-            # FINISHING ANALYSIS OF THE REWEIGHTED FREE ENERGY OF EACH INDIVIDUAL WINDOW - XDATA
-            x_window_fe_counts = -kT*np.log(x_window_fe_counts/(nValues*delta_x))  # no volume correction
-            #x_window_fe_counts = np.array([-kT*np.log(x_window_fe_counts[j]/(nValues*delta_x*four_pi)) for j in range(xBins)])
-            plt.figure(2)
-            plt.plot(x_half_bins[x_window_counts > 10.], x_window_fe_counts[x_window_counts > 10],zorder=3)
-            
-            # ----------------------------------------
-    	# FINISHING ANALYSIS OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - YDATA
-            y_window_prob_density = y_window_counts/(nValues*delta_y)
-            plt.figure(3)
-            plt.plot(y_half_bins[:],y_window_prob_density[:],zorder=3)
-            
-            # ----------------------------------------
+
+        # ----------------------------------------
+        # FINISHING ANALYSIS OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - XDATA
+        x_window_prob_density = x_window_counts/(nValues*delta_x)
+        plt.figure(1)
+        plt.plot(x_half_bins[:],x_window_prob_density[:],zorder=3)
+
+        # ----------------------------------------
+        # FINISHING ANALYSIS OF THE REWEIGHTED FREE ENERGY OF EACH INDIVIDUAL WINDOW - XDATA
+        x_window_fe_counts = -kT*np.log(x_window_fe_counts/(nValues*delta_x))  # no volume correction
+        #x_window_fe_counts = np.array([-kT*np.log(x_window_fe_counts[j]/(nValues*delta_x*four_pi)) for j in range(xBins)])
+        plt.figure(2)
+        plt.plot(x_half_bins[x_window_counts > 10.], x_window_fe_counts[x_window_counts > 10],zorder=3)
+
+        # ----------------------------------------
+        # FINISHING ANALYSIS OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - YDATA
+        y_window_prob_density = y_window_counts/(nValues*delta_y)
+        plt.figure(3)
+        plt.plot(y_half_bins[:],y_window_prob_density[:],zorder=3)
+
+        # ----------------------------------------
     	# FINISHING ANALYSIS OF THE REWEIGHTED FREE ENERGY OF EACH INDIVIDUAL WINDOW - YDATA
-            y_window_fe_counts = -kT*np.log(y_window_fe_counts/(nValues*delta_y))  # no volume correction
-            #y_window_fe_counts = np.array([-kT*np.log(y_window_fe_counts[j]/(nValues*delta_y*four_pi)) for j in range(yBins)])
-            plt.figure(4)
-            plt.plot(y_half_bins[y_window_counts > 10.], y_window_fe_counts[y_window_counts > 10],zorder=3)
-            
-            print 'Done with window', i
-    
+        y_window_fe_counts = -kT*np.log(y_window_fe_counts/(nValues*delta_y))  # no volume correction
+        #y_window_fe_counts = np.array([-kT*np.log(y_window_fe_counts[j]/(nValues*delta_y*four_pi)) for j in range(yBins)])
+        plt.figure(4)
+        plt.plot(y_half_bins[y_window_counts > 10.], y_window_fe_counts[y_window_counts > 10],zorder=3)
+
+        print('Done with window', i)
+
     # ----------------------------------------
     # FINISHED REWEIGHTING, RUNNING BOOTSTRAP ANALYSIS TO GET ERROR BARS
     if parameters['bootstrap_bool']:
-            print 'Beginning bootstrap analysis to approximate error in reweighted CVs'
-            original_data = np.empty((0,3))
-            for i in nWindows_range:
-                    original_data = np.concatenate((original_data,np.array(data[i])))
-    
-            if original_data.shape != (nValues_total,3):
-                    print original_data.shape, nValues_total, 'something went wrong during bootstrapping'
-                    sys.exit()
-    
-            x_bootstrap_results = []
-            y_bootstrap_results = []
-            td_bootstrap_results = []
-            for i in range(parameters['nIterations']):
-                    print 'Starting Step %d of %d steps in bootstrap analysis'%(i,parameters['nIterations'])
-                    # create bootstrap data
-                    sample_data = original_data[np.random.randint(nValues_total,size=nValues_total)]
-                    x_total_fe_bootstrap = np.zeros(xBins)
-                    y_total_fe_bootstrap = np.zeros(yBins)
-                    td_total_fe_bootstrap = np.zeros((xBins,yBins))
-    
-                    # analyze new dataset to get reweighted FE of each bin
-                    for j in range(nValues_total):
-                            
-                            # ----------------------------------------
-    	                # HISTOGRAMMING DATA POINT
-                            x_index = int((sample_data[j,1] - xMin)/delta_x)
-                            y_index = int((sample_data[j,2] - yMin)/delta_y)
-                            
-                            if x_index == xBins:
-                                    x_index = -1
-                            if y_index == yBins:
-                                    y_index = -1
-    
-                            w = 0
-                            for k in nWindows_range:
-                                    w+= np.exp((-beta*r0_k_data[k][1]/2.)*(sample_data[j,0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
-    	                
-                            w /= parameters['nWindows'] # <r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z>; average reciprocal boltzmann weight of data point in all possible windows;
-                            
-                            x_total_fe_bootstrap[x_index] += 1/w
-                            y_total_fe_bootstrap[y_index] += 1/w
-                            td_total_fe_bootstrap[x_index][y_index] += 1/w
-    	        
-                    x_total_fe_bootstrap /= delta_x*nValues_total
-                    x_total_fe_bootstrap = -kT*np.log(x_total_fe_bootstrap)  # no volume correction
-                    x_total_fe_bootstrap -= np.ndarray.min(x_total_fe_bootstrap)
-                    x_bootstrap_results.append(x_total_fe_bootstrap)
-    
-                    y_total_fe_bootstrap /= delta_y*nValues_total
-                    y_total_fe_bootstrap = -kT*np.log(y_total_fe_bootstrap)  # no volume correction
-                    y_total_fe_bootstrap -= np.ndarray.min(y_total_fe_bootstrap)
-                    y_bootstrap_results.append(y_total_fe_bootstrap)
-                    
-                    td_total_fe_bootstrap /= delta_x*delta_y*nValues_total     # currently a stitched probability density; no volume correction
-                    td_total_fe_bootstrap = -kT*np.log(td_total_fe_bootstrap)
-                    td_total_fe_bootstrap -= np.ndarray.min(td_total_fe_bootstrap)
-                    td_bootstrap_results.append(td_total_fe_bootstrap)
-    
-            ### NOTE: CALCS THE STANDARD ERROR OF THE MEAN
-            #x_std_error = np.std(np.array(x_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
-            #y_std_error = np.std(np.array(y_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
-            #td_std_error = np.std(np.array(td_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
-    
-            ### NOTE: CALCS THE STANDARD DEVIATION OF THE BOOTSTRAPPED DATA
-            x_std_error = np.std(np.array(x_bootstrap_results),axis=0)
-            y_std_error = np.std(np.array(y_bootstrap_results),axis=0)
-            td_std_error = np.std(np.array(td_bootstrap_results),axis=0)
-    
-            np.savetxt(parameters['output_directory'] + 'x_axis_error_analysis.dat', x_std_error, fmt='%.10f')
-            np.savetxt(parameters['output_directory'] + 'y_axis_error_analysis.dat', y_std_error, fmt='%.10f')
-            np.savetxt(parameters['output_directory'] + 'td_axis_error_analysis.dat', td_std_error, fmt='%.10f')
-            del sample_data
-            del x_total_fe_bootstrap
-            del y_total_fe_bootstrap
-            del td_total_fe_bootstrap
-            del x_bootstrap_results
-            del y_bootstrap_results
-            del td_bootstrap_results
-        
+        print('Beginning bootstrap analysis to approximate error in reweighted CVs')
+        original_data = np.empty((0,3))
+        for i in nWindows_range:
+            original_data = np.concatenate((original_data,np.array(data[i])))
+
+        if original_data.shape != (nValues_total,3):
+            print(original_data.shape, nValues_total, 'something went wrong during bootstrapping')
+            sys.exit()
+
+        x_bootstrap_results = []
+        y_bootstrap_results = []
+        td_bootstrap_results = []
+        for i in range(parameters['nIterations']):
+            print('Starting Step %d of %d steps in bootstrap analysis'%(i,parameters['nIterations']))
+            # create bootstrap data
+            sample_data = original_data[np.random.randint(nValues_total,size=nValues_total)]
+            x_total_fe_bootstrap = np.zeros(xBins)
+            y_total_fe_bootstrap = np.zeros(yBins)
+            td_total_fe_bootstrap = np.zeros((xBins,yBins))
+
+            # analyze new dataset to get reweighted FE of each bin
+            for j in range(nValues_total):
+                # ----------------------------------------
+                # HISTOGRAMMING DATA POINT
+                x_index = int((sample_data[j,1] - xMin)/delta_x)
+                y_index = int((sample_data[j,2] - yMin)/delta_y)
+
+                if x_index == xBins:
+                    x_index = -1
+                if y_index == yBins:
+                    y_index = -1
+
+                w = 0
+                for k in nWindows_range:
+                    w+= np.exp((-beta*r0_k_data[k][1]/2.)*(sample_data[j,0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
+
+                w /= parameters['nWindows'] # <r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z>; average reciprocal boltzmann weight of data point in all possible windows;
+
+                x_total_fe_bootstrap[x_index] += 1/w
+                y_total_fe_bootstrap[y_index] += 1/w
+                td_total_fe_bootstrap[x_index][y_index] += 1/w
+
+            x_total_fe_bootstrap /= delta_x*nValues_total
+            x_total_fe_bootstrap = -kT*np.log(x_total_fe_bootstrap)  # no volume correction
+            x_total_fe_bootstrap -= np.ndarray.min(x_total_fe_bootstrap)
+            x_bootstrap_results.append(x_total_fe_bootstrap)
+
+            y_total_fe_bootstrap /= delta_y*nValues_total
+            y_total_fe_bootstrap = -kT*np.log(y_total_fe_bootstrap)  # no volume correction
+            y_total_fe_bootstrap -= np.ndarray.min(y_total_fe_bootstrap)
+            y_bootstrap_results.append(y_total_fe_bootstrap)
+
+            td_total_fe_bootstrap /= delta_x*delta_y*nValues_total     # currently a stitched probability density; no volume correction
+            td_total_fe_bootstrap = -kT*np.log(td_total_fe_bootstrap)
+            td_total_fe_bootstrap -= np.ndarray.min(td_total_fe_bootstrap)
+            td_bootstrap_results.append(td_total_fe_bootstrap)
+
+        ### NOTE: CALCS THE STANDARD ERROR OF THE MEAN
+        #x_std_error = np.std(np.array(x_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
+        #y_std_error = np.std(np.array(y_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
+        #td_std_error = np.std(np.array(td_bootstrap_results),axis=0)/np.sqrt(parameters['nIterations'])
+
+        ### NOTE: CALCS THE STANDARD DEVIATION OF THE BOOTSTRAPPED DATA
+        x_std_error = np.std(np.array(x_bootstrap_results),axis=0)
+        y_std_error = np.std(np.array(y_bootstrap_results),axis=0)
+        td_std_error = np.std(np.array(td_bootstrap_results),axis=0)
+
+        np.savetxt(parameters['output_directory'] + 'x_axis_error_analysis.dat', x_std_error, fmt='%.10f')
+        np.savetxt(parameters['output_directory'] + 'y_axis_error_analysis.dat', y_std_error, fmt='%.10f')
+        np.savetxt(parameters['output_directory'] + 'td_axis_error_analysis.dat', td_std_error, fmt='%.10f')
+        del sample_data
+        del x_total_fe_bootstrap
+        del y_total_fe_bootstrap
+        del td_total_fe_bootstrap
+        del x_bootstrap_results
+        del y_bootstrap_results
+        del td_bootstrap_results
+
     # ----------------------------------------
     # FINISHED REWEIGHTING, CLEANING UP VARIABLE SPACE
     del data
@@ -263,115 +263,115 @@ def main():
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - XDATA
     finish_plot(1,parameters['output_directory']+parameters['reweighted_x_axis_prob_density_plot_name'],parameters['x_axis_label'],'Probability Density',xlim=(xMin,xMax))
-    
+
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED, UNSTITCHED FREE ENERGY - XDATA
     finish_plot(2,parameters['output_directory']+parameters['reweighted_x_axis_unstitched_fe_plot_name'],parameters['x_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax))
-    
+
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - YDATA
     finish_plot(3,parameters['output_directory']+parameters['reweighted_y_axis_prob_density_plot_name'],parameters['y_axis_label'],'Probability Density',xlim=(yMin,yMax))
-    
+
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED, UNSTITCHED FREE ENERGY - YDATA
     finish_plot(4,parameters['output_directory']+parameters['reweighted_y_axis_unstitched_fe_plot_name'],parameters['y_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax))
-    
+
     # ----------------------------------------
     # PLOTTING REWEIGHTED X-DATA FE SURFACE
-    print np.sum(x_total_fe_counts)
+    print(np.sum(x_total_fe_counts))
     x_total_fe_counts /= delta_x*nValues_total  # no volume correction
     #x_total_fe_counts /= four_pi*delta_x*nValues_total
-    print np.sum(x_total_fe_counts)
-    
+    print(np.sum(x_total_fe_counts))
+
     if parameters['x_axis_line_functions'] != None:
-            # ----------------------------------------
-            # STATE DESCRIPTION OF X-DATA FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
-            line_x = [parameters['x_axis_line_functions'][0],parameters['x_axis_line_functions'][0]]    # two points in this line
-            line_y = [0.0,parameters['x_axis_line_functions'][1]]
-            
-            # this assumes a straight line cutoff for a two state description... a whole lot of assumptions that are not generalizable...
-            state_one_prob_density = np.sum([x_total_fe_counts[i] for i in range(xBins) if x_half_bins[i] < parameters['x_axis_line_functions'][0]])    # state one is closed conf.
-            state_two_prob_density = np.sum([x_total_fe_counts[i] for i in range(xBins) if x_half_bins[i] >= parameters['x_axis_line_functions'][0]])   # state two is open conf.
-    
-            state_free_energies = np.array([-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)])
-            state_free_energies -= np.min(state_free_energies)
-            print 'X-axis state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1'
-            # ----------------------------------------
-    
+        # ----------------------------------------
+        # STATE DESCRIPTION OF X-DATA FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
+        line_x = [parameters['x_axis_line_functions'][0],parameters['x_axis_line_functions'][0]]    # two points in this line
+        line_y = [0.0,parameters['x_axis_line_functions'][1]]
+
+        # this assumes a straight line cutoff for a two state description... a whole lot of assumptions that are not generalizable...
+        state_one_prob_density = np.sum([x_total_fe_counts[i] for i in range(xBins) if x_half_bins[i] < parameters['x_axis_line_functions'][0]])    # state one is closed conf.
+        state_two_prob_density = np.sum([x_total_fe_counts[i] for i in range(xBins) if x_half_bins[i] >= parameters['x_axis_line_functions'][0]])   # state two is open conf.
+
+        state_free_energies = np.array([-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)])
+        state_free_energies -= np.min(state_free_energies)
+        print('X-axis state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1')
+        # ----------------------------------------
+
     x_total_fe_counts = -kT*np.log(x_total_fe_counts) # no volume correction
     x_total_fe_counts -= np.ndarray.min(x_total_fe_counts)
     np.savetxt(parameters['output_directory'] + parameters['reweighted_x_axis_stitched_fe_data_file_name'], np.c_[range(xBins),x_half_bins,x_total_fe_counts], fmt='%.10f')
-    
+
     plt.figure(5)
     if parameters['bootstrap_bool']:
-            plt.errorbar(x_half_bins[:],x_total_fe_counts[:],yerr=x_std_error,ecolor='r',elinewidth=0.5,zorder=3)
+        plt.errorbar(x_half_bins[:],x_total_fe_counts[:],yerr=x_std_error,ecolor='r',elinewidth=0.5,zorder=3)
     else:
-            plt.plot(x_half_bins[:],x_total_fe_counts[:],zorder=3)
+        plt.plot(x_half_bins[:],x_total_fe_counts[:],zorder=3)
     if parameters['x_axis_line_functions'] != None:
-            plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
+        plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
     finish_plot(5, parameters['output_directory']+parameters['reweighted_x_axis_stitched_fe_plot_name'], parameters['x_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax),ylim=(-0.05,10)) # NOTE
-    
+
     # ----------------------------------------
     # PLOTTING REWEIGHTED Y-DATA FE SURFACE
     y_total_fe_counts /= delta_y*nValues_total  # no volume correction
     #y_total_fe_counts /= four_pi*delta_y*nValues_total
-    
+
     if parameters['y_axis_line_functions'] != None:
-            # ----------------------------------------
-            # STATE DESCRIPTION OF X-DATA FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
-            line_x = [parameters['y_axis_line_functions'][0],parameters['y_axis_line_functions'][0]]    # two points in this line
-            line_y = [0.0,parameters['y_axis_line_functions'][1]]
-            
-            # this assumes a straight line cutoff for a two state description... a whole lot of assumptions that are not generalizable...
-            state_one_prob_density = np.sum([y_total_fe_counts[i] for i in range(yBins) if y_half_bins[i] < parameters['y_axis_line_functions'][2]])
-            state_two_prob_density = np.sum([y_total_fe_counts[i] for i in range(yBins) if y_half_bins[i] >= parameters['y_axis_line_functions'][2]])
-    
-            state_free_energies = [-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)]
-            state_free_energies -= np.min(state_free_energies)
-            print 'Y-axis state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1'
-            # ----------------------------------------
-    
+        # ----------------------------------------
+        # STATE DESCRIPTION OF X-DATA FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
+        line_x = [parameters['y_axis_line_functions'][0],parameters['y_axis_line_functions'][0]]    # two points in this line
+        line_y = [0.0,parameters['y_axis_line_functions'][1]]
+
+        # this assumes a straight line cutoff for a two state description... a whole lot of assumptions that are not generalizable...
+        state_one_prob_density = np.sum([y_total_fe_counts[i] for i in range(yBins) if y_half_bins[i] < parameters['y_axis_line_functions'][2]])
+        state_two_prob_density = np.sum([y_total_fe_counts[i] for i in range(yBins) if y_half_bins[i] >= parameters['y_axis_line_functions'][2]])
+
+        state_free_energies = [-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)]
+        state_free_energies -= np.min(state_free_energies)
+        print('Y-axis state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1')
+        # ----------------------------------------
+
     y_total_fe_counts = -kT*np.log(y_total_fe_counts)
     y_total_fe_counts -= np.ndarray.min(y_total_fe_counts)
     np.savetxt(parameters['output_directory'] + parameters['reweighted_y_axis_stitched_fe_data_file_name'], np.c_[range(yBins),y_half_bins,y_total_fe_counts], fmt='%.10f')
-    
+
     plt.figure(6)
     if parameters['bootstrap_bool']:
-            plt.errorbar(y_half_bins[:],y_total_fe_counts[:],yerr=y_std_error,ecolor='r',elinewidth=0.5,zorder=3)
+        plt.errorbar(y_half_bins[:],y_total_fe_counts[:],yerr=y_std_error,ecolor='r',elinewidth=0.5,zorder=3)
     else:
-            plt.plot(y_half_bins[:],y_total_fe_counts[:],zorder=3)
+        plt.plot(y_half_bins[:],y_total_fe_counts[:],zorder=3)
     if parameters['y_axis_line_functions'] != None:
-            plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
+        plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
     finish_plot(6, parameters['output_directory']+parameters['reweighted_y_axis_stitched_fe_plot_name'], parameters['y_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax),ylim=(-0.05,10)) # NOTE
-    
+
     # ----------------------------------------
     # PLOTTING REWEIGHTED 2D FE LANDSCAPE
     td_total_fe_counts /= delta_x*delta_y*nValues_total     # currently a stitched probability density; no volume correction
     #td_total_fe_counts /= four_pi*delta_x*delta_y*nValues_total     # currently a stitched probability density; with vol correction
     
     if parameters['td_line_function'] != None:
-            # ----------------------------------------
-            # STATE DESCRIPTION OF 2D FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
-            
-            # x_half_bins should be larger than the y_half_bins array; a safe assumption for the purposes of this code
-            line_x = x_half_bins
-            line_y = eval('line_x'+parameters['td_line_function'])
-            state_one_prob_density = 0.
-            state_two_prob_density = 0.
-            for i in range(xBins):
-                    state_one_prob_density += np.sum(td_total_fe_counts[i]*(y_half_bins < line_y[i]).astype(float))
-                    state_two_prob_density += np.sum(td_total_fe_counts[i]*(y_half_bins >= line_y[i]).astype(float))
-                    
-            state_free_energies = [-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)]
-            state_free_energies -= np.min(state_free_energies)
-            print '2D state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1'
-            # ----------------------------------------
-    
+        # ----------------------------------------
+        # STATE DESCRIPTION OF 2D FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
+
+        # x_half_bins should be larger than the y_half_bins array; a safe assumption for the purposes of this code
+        line_x = x_half_bins
+        line_y = eval('line_x'+parameters['td_line_function'])
+        state_one_prob_density = 0.
+        state_two_prob_density = 0.
+        for i in range(xBins):
+                state_one_prob_density += np.sum(td_total_fe_counts[i]*(y_half_bins < line_y[i]).astype(float))
+                state_two_prob_density += np.sum(td_total_fe_counts[i]*(y_half_bins >= line_y[i]).astype(float))
+
+        state_free_energies = [-kT*np.log(state_one_prob_density), -kT*np.log(state_two_prob_density)]
+        state_free_energies -= np.min(state_free_energies)
+        print('2D state space FE: State One: ', state_free_energies[0], 'kcal mol^-1; State two: ', state_free_energies[1], 'kcal mol^-1')
+        # ----------------------------------------
+
     td_total_fe_counts = -kT*np.log(td_total_fe_counts)
     td_total_fe_counts -= np.ndarray.min(td_total_fe_counts)
     np.savetxt(parameters['output_directory'] + parameters['reweighted_2d_heatmap_data_file_name'], td_total_fe_counts, fmt='%.10f')
     masked_fe_counts = ma.masked_where(np.isinf(td_total_fe_counts),td_total_fe_counts)
-    
+
     fig, ax = plt.subplots(num=7)
     #plt.pcolormesh(x_edges,y_edges,masked_fe_counts.T,cmap=free_energy_cmap,zorder=3)
     #cb1 = plt.colorbar(extend='max')    #
@@ -379,13 +379,13 @@ def main():
     cb1 = plt.colorbar()    #extend='max'
     cb1.set_label(r'Relative Free Energy (kcal mol$^{-1}$)',size=14)
     if parameters['td_line_function'] != None:
-            plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
+        plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
     ax.set_aspect('equal')
     finish_plot(7, parameters['output_directory']+parameters['reweighted_2d_heatmap_plot_name'], parameters['x_axis_label'], parameters['x_axis_label'],xlim=(xMin,xMax),ylim=(yMin,yMax)) # NOTE
-    
+
     plt.close()
-    print 'Done plotting...'
-    
+    print('Done plotting.')
+
     # ----------------------------------------
     # OUTPUT SUMMARY FILE
     IO.summary(parameters['output_directory'] + 'reweighting.summary',sys.argv,parameters)
@@ -398,16 +398,16 @@ IO.config_parser(config_file,parameters)
 # ----------------------------------------
 # CREATING OUTPUT DIRECTORY
 if parameters['output_directory'][-1] != os.sep:
-        parameters['output_directory'] += os.sep
+    parameters['output_directory'] += os.sep
 
 if os.path.exists(parameters['output_directory']):
-        print 'The output directory, ', parameters['output_directory'], ' already exists. Please delete this directory or select a different one for output before proceeding.'
-        sys.exit()
+    print('The output directory, ', parameters['output_directory'], ' already exists. Please delete this directory or select a different one for output before proceeding.')
+    sys.exit()
 else:
-        os.mkdir(parameters['output_directory'])
+    os.mkdir(parameters['output_directory'])
 
 # ----------------------------------------
 # MAIN
 if __name__ == '__main__':
-	main()
+    main()
 

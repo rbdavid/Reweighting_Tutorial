@@ -1,4 +1,3 @@
-#!/home/rbdavid/bin/python
 # ----------------------------------------
 # USAGE:
 # assuming 1D US simulations are being reweighted into a 2d collective variable space
@@ -352,7 +351,6 @@ def main():
     if parameters['td_line_function'] != None:
         # ----------------------------------------
         # STATE DESCRIPTION OF 2D FE SURFACE; CURRENTLY ASSUMING ONLY TWO STATES
-
         # x_half_bins should be larger than the y_half_bins array; a safe assumption for the purposes of this code
         line_x = x_half_bins
         line_y = eval('line_x'+parameters['td_line_function'])
@@ -373,8 +371,6 @@ def main():
     masked_fe_counts = ma.masked_where(np.isinf(td_total_fe_counts),td_total_fe_counts)
 
     fig, ax = plt.subplots(num=7)
-    #plt.pcolormesh(x_edges,y_edges,masked_fe_counts.T,cmap=free_energy_cmap,zorder=3)
-    #cb1 = plt.colorbar(extend='max')    #
     plt.pcolormesh(x_edges,y_edges,masked_fe_counts.T,cmap=free_energy_cmap,zorder=3,vmax=10)
     cb1 = plt.colorbar()    #extend='max'
     cb1.set_label(r'Relative Free Energy (kcal mol$^{-1}$)',size=14)
