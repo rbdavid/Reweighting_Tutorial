@@ -36,7 +36,7 @@ def summary(file_name,arguments,parameters):
             f.write('%s ' %(arguments[i]))
         f.write('\n\n')
         f.write('Parameters used:\n')
-        for key, value in parameters.iteritems():
+        for key, value in list(parameters.items()):
             if key == '__builtins__':
                 continue
             if type(value) == int or type(value) == float:
