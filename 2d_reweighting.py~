@@ -31,7 +31,7 @@ def main():
     print('Starting EMUS analysis')
     psis, cv_trajs, neighbors = usutils.data_from_meta(parameters['emus_meta_file'],parameters['num_biased_dimensions'],T=parameters['temperature'],k_B=parameters['k_B']) # psis is a list of arrays containing the relative weights of each window's cv values in all windows. cv_trajs is a list of arrays containing the raw cv values for each window. neighbors is an 2D array containing indices for neighboring windows to be used. 
     # calculate the partition function for each window
-    z, F = emus.calculate_zs(psis,neighbors=neighbors)  # z is an 1D array that contains the normalization constant for each window. F is an 2D array (num windows by num windows) that contains the eigenvalues of the iterature EMUS process.
+    z, F = emus.calculate_zs(psis,neighbors=neighbors,n_iter=1000)  # z is an 1D array that contains the normalization constant for each window. F is an 2D array (num windows by num windows) that contains the eigenvalues of the iterature EMUS process.
     zerr, zcontribs, ztaus = avar.calc_partition_functions(psis,z,F,iat_method='acor')
     np.savetxt(parameters['output_directory'] + 'emus_stitching_constants.dat',np.c_[list(range(int(parameters['nWindows']))),z,zerr], fmt='%15.10f')
     r0_k_data, file_list = IO.read_meta(parameters['emus_meta_file'])    # file_list not being saved...
@@ -43,6 +43,9 @@ def main():
     del neighbors
     del F
     del file_list
+    del zerr
+    del zcontribs
+    del ztaus
 
     # ----------------------------------------
     # load in unbiased and biased cv data
