@@ -105,13 +105,13 @@ def main():
                 y_index = int((data[i][j][2] - yMin)/delta_y)
 
                 if x_index < 0 or x_index > xBins:
-                    print '!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough. Job failed.'
+                    print '!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough in the x-dimension. Job failed.'
                     sys.exit()
                 elif x_index == xBins:
                     x_index = -1
 
                 if y_index < 0 or y_index > yBins:
-                    print '!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough. Job failed.'
+                    print '!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough in the y-dimension. Job failed.'
                     sys.exit()
                 elif y_index == yBins:
                     y_index = -1

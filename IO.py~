@@ -22,7 +22,7 @@ def config_parser(config_file,parameters):	# Function to take config file and cr
     with open(config_file) as f:
         exec(compile(f.read(),config_file,'exec'),parameters)
 
-    for key, value in parameters.iteritems():
+    for key, value in list(parameters.items()):
         if value == '':
             print('%s has not been assigned a value. This variable is necessary for the script to run. Please declare this variable within the config file.' %(key))
             sys.exit()
