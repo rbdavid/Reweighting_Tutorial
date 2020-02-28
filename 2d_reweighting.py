@@ -24,7 +24,7 @@ def main():
     free_energy_cmap = plt.cm.get_cmap('Blues_r')
     four_pi = 4.*np.pi
     kT = parameters['k_B']*parameters['temperature']
-    beta = 1./kT
+    beta = 1./(2.*kT)
 
     # ----------------------------------------
     # load data
@@ -105,21 +105,21 @@ def main():
                 y_index = int((data[i][j][2] - yMin)/delta_y)
 
                 if x_index < 0 or x_index > xBins:
-                    print '!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough. Job failed.'
+                    print '!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough in the x-dimension. Job failed.'
                     sys.exit()
                 elif x_index == xBins:
                     x_index = -1
 
                 if y_index < 0 or y_index > yBins:
-                    print '!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough. Job failed.'
+                    print '!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough in the y-dimension. Job failed.'
                     sys.exit()
                 elif y_index == yBins:
                     y_index = -1
 
                 # ----------------------------------------
                 # ANALYZING DATA POINT IN CONSIDERATION OF CURRENT WINDOW
-                w = np.exp((-beta*r0_k_data[i][1]/2.)*(data[i][j][0] - r0_k_data[i][0])**2)/z[i]     # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
-                #w = (data[i][j][0]**2)*np.exp((-beta*r0_k_data[i][1]/2.)*(data[i][j][0] - r0_k_data[i][0])**2)/z[i]     # r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z; 
+                w = np.exp((-beta*r0_k_data[i][1])*(data[i][j][0] - r0_k_data[i][0])**2)/z[i]     # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
+                #w = (data[i][j][0]**2)*np.exp((-beta*r0_k_data[i][1])*(data[i][j][0] - r0_k_data[i][0])**2)/z[i]     # r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z; 
 
                 x_window_counts[x_index] += 1
                 x_window_fe_counts[x_index] += 1/w
@@ -130,8 +130,8 @@ def main():
                 # ANALYZING DATA POINT IN CONSIDERATION OF ALL WINDOWS
                 w = 0
                 for k in nWindows_range:
-                        w+= np.exp((-beta*r0_k_data[k][1]/2.)*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
-                        #w+= (data[i][j][0]**2)*np.exp((-beta*r0_k_data[k][1]/2.)*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z; 
+                        w+= np.exp((-beta*r0_k_data[k][1])*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
+                        #w+= (data[i][j][0]**2)*np.exp((-beta*r0_k_data[k][1])*(data[i][j][0] - r0_k_data[k][0])**2)/z[k]       # r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z; 
 
                 w /= parameters['nWindows'] # <r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z>; average reciprocal boltzmann weight of data point in all possible windows;
                 weight = 1./w
@@ -205,7 +205,7 @@ def main():
 
                 w = 0
                 for k in nWindows_range:
-                    w+= np.exp((-beta*r0_k_data[k][1]/2.)*(sample_data[j,0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
+                    w+= np.exp((-beta*r0_k_data[k][1])*(sample_data[j,0] - r0_k_data[k][0])**2)/z[k]       # exp((-k/2*k_B*T)(r-r0)^2)/z; no volume correction...
 
                 w /= parameters['nWindows'] # <r^2 * exp((-k/2*k_B*T)(r-r0)^2)/z>; average reciprocal boltzmann weight of data point in all possible windows;
 
