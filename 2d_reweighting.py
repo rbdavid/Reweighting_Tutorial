@@ -261,19 +261,19 @@ def main():
     
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - XDATA
-    finish_plot(1,parameters['output_directory']+parameters['reweighted_x_axis_prob_density_plot_name'],parameters['x_axis_label'],'Probability Density',xlim=(xMin,xMax))
+    IO.finish_plot(1,parameters['output_directory']+parameters['reweighted_x_axis_prob_density_plot_name'],parameters['x_axis_label'],'Probability Density',xlim=(xMin,xMax))
 
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED, UNSTITCHED FREE ENERGY - XDATA
-    finish_plot(2,parameters['output_directory']+parameters['reweighted_x_axis_unstitched_fe_plot_name'],parameters['x_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax))
+    IO.finish_plot(2,parameters['output_directory']+parameters['reweighted_x_axis_unstitched_fe_plot_name'],parameters['x_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax))
 
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED PROB. DENSITY OF EACH INDIVIDUAL WINDOW - YDATA
-    finish_plot(3,parameters['output_directory']+parameters['reweighted_y_axis_prob_density_plot_name'],parameters['y_axis_label'],'Probability Density',xlim=(yMin,yMax))
+    IO.finish_plot(3,parameters['output_directory']+parameters['reweighted_y_axis_prob_density_plot_name'],parameters['y_axis_label'],'Probability Density',xlim=(yMin,yMax))
 
     # ----------------------------------------
     # FINISHING PLOTTING OF THE REWEIGHTED, UNSTITCHED FREE ENERGY - YDATA
-    finish_plot(4,parameters['output_directory']+parameters['reweighted_y_axis_unstitched_fe_plot_name'],parameters['y_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax))
+    IO.finish_plot(4,parameters['output_directory']+parameters['reweighted_y_axis_unstitched_fe_plot_name'],parameters['y_axis_label'],r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax))
 
     # ----------------------------------------
     # PLOTTING REWEIGHTED X-DATA FE SURFACE
@@ -308,7 +308,7 @@ def main():
         plt.plot(x_half_bins[:],x_total_fe_counts[:],zorder=3)
     if parameters['x_axis_line_functions'] != None:
         plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
-    finish_plot(5, parameters['output_directory']+parameters['reweighted_x_axis_stitched_fe_plot_name'], parameters['x_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax),ylim=(-0.05,10)) # NOTE
+    IO.finish_plot(5, parameters['output_directory']+parameters['reweighted_x_axis_stitched_fe_plot_name'], parameters['x_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(xMin,xMax),ylim=(-0.05,10)) # NOTE
 
     # ----------------------------------------
     # PLOTTING REWEIGHTED Y-DATA FE SURFACE
@@ -341,7 +341,7 @@ def main():
         plt.plot(y_half_bins[:],y_total_fe_counts[:],zorder=3)
     if parameters['y_axis_line_functions'] != None:
         plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
-    finish_plot(6, parameters['output_directory']+parameters['reweighted_y_axis_stitched_fe_plot_name'], parameters['y_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax),ylim=(-0.05,10)) # NOTE
+    IO.finish_plot(6, parameters['output_directory']+parameters['reweighted_y_axis_stitched_fe_plot_name'], parameters['y_axis_label'], r'Relative Free Energy (kcal mol$^{-1}$)',xlim=(yMin,yMax),ylim=(-0.05,10)) # NOTE
 
     # ----------------------------------------
     # PLOTTING REWEIGHTED 2D FE LANDSCAPE
@@ -377,7 +377,7 @@ def main():
     if parameters['td_line_function'] != None:
         plt.plot(line_x,line_y,'r--',alpha=0.5,zorder=3)
     ax.set_aspect('equal')
-    finish_plot(7, parameters['output_directory']+parameters['reweighted_2d_heatmap_plot_name'], parameters['x_axis_label'], parameters['x_axis_label'],xlim=(xMin,xMax),ylim=(yMin,yMax)) # NOTE
+    IO.finish_plot(7, parameters['output_directory']+parameters['reweighted_2d_heatmap_plot_name'], parameters['x_axis_label'], parameters['x_axis_label'],xlim=(xMin,xMax),ylim=(yMin,yMax)) # NOTE
 
     plt.close()
     print('Done plotting.')

@@ -28,7 +28,7 @@ def main():
 
     # ----------------------------------------
     # load data
-    print 'Starting EMUS analysis'
+    print('Starting EMUS analysis')
     psis, cv_trajs, neighbors = usutils.data_from_meta(parameters['emus_meta_file'],parameters['num_biased_dimensions'],T=parameters['temperature'],k_B=parameters['k_B']) # psis is a list of arrays containing the relative weights of each window's cv values in all windows. cv_trajs is a list of arrays containing the raw cv values for each window. neighbors is an 2D array containing indices for neighboring windows to be used. 
     # calculate the partition function for each window
     z, F = emus.calculate_zs(psis,neighbors=neighbors)  # z is an 1D array that contains the normalization constant for each window. F is an 2D array (num windows by num windows) that contains the eigenvalues of the iterature EMUS process.
@@ -105,13 +105,13 @@ def main():
                 y_index = int((data[i][j][2] - yMin)/delta_y)
 
                 if x_index < 0 or x_index > xBins:
-                    print '!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough in the x-dimension. Job failed.'
+                    print('!!! 0 > x_index >= xBins ...', data[i][j][0], x_index, i, 'Histogram bounds are not wide enough in the x-dimension. Job failed.')
                     sys.exit()
                 elif x_index == xBins:
                     x_index = -1
 
                 if y_index < 0 or y_index > yBins:
-                    print '!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough in the y-dimension. Job failed.'
+                    print('!!! 0 > y_index >= yBins ...', data[i][j][0], y_index, i, 'Histogram bounds are not wide enough in the y-dimension. Job failed.')
                     sys.exit()
                 elif y_index == yBins:
                     y_index = -1
