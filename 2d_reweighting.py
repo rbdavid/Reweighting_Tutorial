@@ -48,7 +48,7 @@ def main():
     del ztaus
 
     # ----------------------------------------
-    # load in unbiased and biased cv data
+    # load in unbiased and biased cv data   ### NOTE: this should be moved to IO.py 
     print('Starting to load in cv data (original and new)')
     nWindows_range = range(int(parameters['nWindows'])) # assumes windows are numbered with zero-indexing
     nProductions_range = range(int(parameters['start_production_number']),int(parameters['end_production_number'])+1)
