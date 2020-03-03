@@ -276,10 +276,8 @@ def main():
 
     # ----------------------------------------
     # PLOTTING REWEIGHTED X-DATA FE SURFACE
-    print(np.sum(x_total_fe_counts))
     x_total_fe_counts /= delta_x*nValues_total  # no volume correction
     #x_total_fe_counts /= four_pi*delta_x*nValues_total
-    print(np.sum(x_total_fe_counts))
 
     x_total_fe_counts = -kT*np.log(x_total_fe_counts) # no volume correction
     x_total_fe_counts -= np.ndarray.min(x_total_fe_counts)
