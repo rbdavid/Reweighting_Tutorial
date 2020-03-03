@@ -1,0 +1,21 @@
+To recreate this analysis, run this line:
+reweighting.py reweighting.config IO.py 
+
+Parameters used:
+emus_meta_file = 'concatenated_data_meta_data.dat'
+num_biased_dimensions = 1
+temperature = 300.0
+k_B = 0.0019872036
+unbiased_data_files_naming = 'window%03d.unbiased_cv.dat'
+nWindows = 5
+xMin = -28.5
+xMax = 21.0
+xBins = 132
+x_axis_label = 'Unbiased CV'
+reweighted_x_axis_prob_density_plot_name = 'reweighted_prob_density.png'
+reweighted_x_axis_unstitched_fe_plot_name = 'reweighted_unstitched_fe.png'
+reweighted_x_axis_stitched_fe_plot_name = 'reweighted_stitched_fe.png'
+bootstrap_bool = 'True'
+nIterations = 1000
+reweighted_x_axis_stitched_fe_data_file_name = 'pc1.reweighted_stitched_fe.dat'
+summary_output_filename = 'reweighting.summary.txt'
